@@ -47,11 +47,11 @@ class AuthAPITests(TestCase):
 
     def test_user_details(self):
         data = {
-            'age': 25,
-            'date_of_birth': '1999-01-01',
-            'profession': 'Engineer',
-            'address': '123 Main St, Anytown',
-            'hobby': 'Reading'
+            'age': 18,
+            'date_of_birth': '2005-07-14',
+            'profession': 'Software Engineer Intern',
+            'address': '456 Josh St, Town',
+            'hobby': 'Gaming'
         }
         response = self.client.post(self.user_details_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -60,11 +60,11 @@ class AuthAPITests(TestCase):
     def test_update_profile(self):
         # Create a UserDetails instance for the user
         user_details_data = {
-            'age': 25,
-            'date_of_birth': '1999-01-01',
-            'profession': 'Engineer',
-            'address': '123 Main St, Anytown',
-            'hobby': 'Reading'
+            'age': 24,
+            'date_of_birth': '2000-01-01',
+            'profession': 'Information Technology Intern',
+            'address': '785 Appleberry Ln, Fruitville',
+            'hobby': 'Jogging'
         }
         UserDetails.objects.create(user=self.user, **user_details_data)
 
@@ -74,9 +74,9 @@ class AuthAPITests(TestCase):
         updated_data = {
             'age': 30,
             'date_of_birth': '1994-01-01',
-            'profession': 'Software Developer',
-            'address': '456 Elm St, Othertown',
-            'hobby': 'Gardening'
+            'profession': 'Professional Gamer',
+            'address': '995 State Dr, Townsville',
+            'hobby': 'Lollygagging'
         }
 
         # Construct the update URL for the user profile
@@ -91,7 +91,7 @@ class AuthAPITests(TestCase):
         # Refresh the user object from the database and assert updated fields
         self.user.refresh_from_db()
         self.assertEqual(self.user.userdetails.age, 30)
-        self.assertEqual(self.user.userdetails.profession, 'Software Developer')
+        self.assertEqual(self.user.userdetails.profession, 'Professional Gamer')
 
 
     def test_delete_user(self):
