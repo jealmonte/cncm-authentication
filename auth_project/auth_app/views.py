@@ -3,6 +3,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserDetails
 from .serializers import UserSerializer, UserDetailsSerializer
+from django.contrib.auth import get_user_model
+from rest_framework.views import APIView
+
+User = get_user_model()
 
 class SignupView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -26,6 +30,29 @@ class LoginView(generics.GenericAPIView):
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+class UserListView(APIView):
+    def get(self, request):
+        users = User.objects.all()
+        data = []
+        
+        for user in users:
+            user_details = user.userdetails  # Assuming OneToOneField relationship
+            
+            user_data = {
+                'id': user.id,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'age': user_details.age,
+                'date_of_birth': user_details.date_of_birth,
+                'profession': user_details.profession,
+                'address': user_details.address,
+                'hobby': user_details.hobby
+            }
+            data.append(user_data)
+        
+        return Response(data)
+    
 class UserDetailsView(generics.CreateAPIView):
     queryset = UserDetails.objects.all()
     serializer_class = UserDetailsSerializer
@@ -35,9 +62,11 @@ class UserDetailsView(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
 class UpdateUserProfileView(generics.UpdateAPIView):
-    queryset = UserDetails.objects.all()
     serializer_class = UserDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.userdetails
 
 class DeleteUserView(generics.DestroyAPIView):
     queryset = User.objects.all()
